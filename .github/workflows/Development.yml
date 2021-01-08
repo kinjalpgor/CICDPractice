@@ -24,9 +24,7 @@ jobs:
       
     - name: Build
       run: cd CICDPractice/ && dotnet build --configuration Debug --no-restore /p:DebugType=None
-      
-    #- name: Test
-    #  run: cd CICDPractice/ && dotnet test --no-build --verbosity normal
+    
       
     - name: Dotnet publish
       run: cd CICDPractice/ && dotnet publish --self-contained false /p:DebugType=None
