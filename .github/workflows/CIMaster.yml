@@ -1,4 +1,4 @@
-name: .NET
+name: Production Build
 
 on:
   push:
@@ -13,20 +13,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
+        
     - name: Restore dependencies
       run: cd CICDPractice/ && dotnet restore
+      
     - name: Build
-      run: cd CICDPractice/ && dotnet build --no-restore
-    - name: Test
-      run: cd CICDPractice/ && dotnet test --no-build --verbosity normal
+      run: cd CICDPractice/ && dotnet build --configuration Release --no-restore /p:DebugType=None
+      
+    #- name: Test
+    #  run: cd CICDPractice/ && dotnet test --no-build --verbosity normal
+      
     - name: Dotnet publish
-      run: cd CICDPractice/ && dotnet publish
-    - name: Upload Build Publish Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Publish
-        path:  /home/runner/work/CICDPractice/CICDPractice/CICDPractice/bin/Debug/netcoreapp3.1/publish/
+      run: cd CICDPractice/ && dotnet publish --self-contained false /p:DebugType=None
+      
+   # - name: Upload Build Publish Artifact
+    #  uses: actions/upload-artifact@v2
+     # with:
+      #  name: Publish
+       # path:  /home/runner/work/CICDPractice/CICDPractice/CICDPractice/bin/Debug/netcoreapp3.1/publish/
