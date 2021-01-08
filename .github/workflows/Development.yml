@@ -25,10 +25,11 @@ jobs:
     - name: Build
       run: cd CICDPractice/ && dotnet build --configuration Debug --no-restore /p:DebugType=None
       
-    #- name: Test
-    #  run: cd CICDPractice/ && dotnet test --no-build --verbosity normal
-      
     - name: Dotnet publish
-      run: cd CICDPractice/ && dotnet publish --self-contained false /p:DebugType=None
+      run: cd CICDPractice/ && dotnet publish  --self-contained false /p:DebugType=None
       
-   
+    - name: Upload Build Publish Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Publish
+        path:  /home/runner/work/CICDPractice/CICDPractice/CICDPractice/bin/Debug/netcoreapp3.1/publish/
