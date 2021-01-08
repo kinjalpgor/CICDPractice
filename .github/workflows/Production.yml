@@ -26,6 +26,6 @@ jobs:
       run: cd CICDPractice/ && dotnet build --configuration Release --no-restore /p:DebugType=None
           
     - name: Dotnet publish
-      run: cd CICDPractice/ && dotnet publish --self-contained false /p:DebugType=None
+      run: cd CICDPractice/ && dotnet publish --self-contained false --configuration Release /p:DebugType=None
       
     
