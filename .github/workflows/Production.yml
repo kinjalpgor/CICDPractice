@@ -28,4 +28,8 @@ jobs:
     - name: Dotnet publish
       run: cd CICDPractice/ && dotnet publish --self-contained false --configuration Release /p:DebugType=None
       
-    
+    - name: Upload Build Publish Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Publish
+        path: /home/runner/work/CICDPractice/CICDPractice/CICDPractice/bin/Release/netcoreapp3.1/publish/
