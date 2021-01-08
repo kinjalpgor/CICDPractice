@@ -26,10 +26,6 @@ jobs:
       run: cd CICDPractice/ && dotnet build --configuration Debug --no-restore /p:DebugType=None
       
     - name: Dotnet publish
-      run: dotnet publish CICDPractice/CICDPractice..csproj -o PublishDev/CICDPractice/ --self-contained false /p:DebugType=None
+      run: cd CICDPractice/ && dotnet build  --self-contained false /p:DebugType=None
       
-    - name: Upload Build Publish Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Publish
-        path: PublishDev/CICDPractice/
+   
