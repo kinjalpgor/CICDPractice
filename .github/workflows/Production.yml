@@ -33,12 +33,13 @@ jobs:
       with:
         name: Publish
         path: Publish/CICDPractice/
-    - uses: cschleiden/webdeploy-action@v1
+    - name: GitHub Actions WebDeploy
+      uses: cschleiden/webdeploy-action@v1
       with:
         webSiteName: 'MyDemoSite'
         publish-profile: ${{secrets.AZURE_WEBDEPLOY_PUBLISH_PROFILE}}
         package: Publish/CICDPractice/
-     
+
    # - name : Deploy to Azure App service
    #   uses: azure/webapps-deploy@v2
    #   with:
