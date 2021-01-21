@@ -35,7 +35,7 @@ jobs:
         path: Publish/CICDPractice/
     - uses: cschleiden/webdeploy-action@v1
       with:
-        webSiteName: 'Default Web Site'
+        webSiteName: 'MyDemoSite'
         publish-profile: ${{secrets.AZURE_WEBDEPLOY_PUBLISH_PROFILE}}
         package: Publish/CICDPractice/
      
