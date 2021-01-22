@@ -11,10 +11,12 @@ jobs:
 
     runs-on: windows-latest
     env:
+      PROJECT_DIRECTORY_PATH: "CICDPractice"
       IIS_SERVER_COMPUTER_NAME: ${{ secrets.IIS_SERVER_COMPUTER_NAME }}
       IIS_WEBSITE_NAME: ${{ secrets.IIS_WEBSITE_NAME }}
       IIS_SERVER_USERNAME: ${{ secrets.IIS_SERVER_USERNAME }}
       IIS_SERVER_PASSWORD: ${{ secrets.IIS_SERVER_PASSWORD }}
+      RECYCLE_APP_NAME: ${{ secrets.RECYCLE_APP_NAME }}
       WEBSITE_CONTENT_PATH: ${{ secrets.WEBSITE_CONTENT_PATH }}
       
     steps:
@@ -36,28 +38,20 @@ jobs:
       
     - name: Build
       run: cd CICDPractice/ && dotnet build --configuration Release --no-restore /p:DebugType=None
-          
+        
     - name: Dotnet publish
-      run: dotnet publish CICDPractice/CICDPractice.csproj -o Publish/CICDPractice/ --self-contained false /p:DebugType=None
+      run: dotnet publish
+           ${{ env.PROJECT_DIRECTORY_PATH }}/${{ env.PROJECT_DIRECTORY_PATH }}.csproj
+           --source https://api.nuget.org/v3/index.json
+           --configuration Release
+             
       
-    - name: Upload Build Publish Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Publish
-        path: Publish/CICDPractice/
+    - name: Stop Application Pool
+      shell: cmd
+      run: '"C:/Program Files (x86)/IIS/Microsoft Web Deploy V3/msdeploy.exe" -verb:sync -allowUntrusted -source:recycleApp -dest:recycleApp="${{ env.RECYCLE_APP_NAME }}",recycleMode="StopAppPool",computerName="${{ env.IIS_SERVER_COMPUTER_NAME }}/msdeploy.axd?site=${{ env.IIS_WEBSITE_NAME }}",username="${{ env.IIS_SERVER_USERNAME }}",password="${{ env.IIS_SERVER_PASSWORD }}",AuthType="Basic"'
     - name: Deploy Application
       shell: cmd
-      run: '"C:/Program Files (x86)/IIS/Microsoft Web Deploy V3/msdeploy.exe" -verb:sync -allowUntrusted -source:contentPath="Publish/CICDPractice/" -dest:contentPath="${{ env.WEBSITE_CONTENT_PATH }}",computerName="${{ env.IIS_SERVER_COMPUTER_NAME }}/msdeploy.axd?site=${{ env.IIS_WEBSITE_NAME }}",username="${{ env.IIS_SERVER_USERNAME }}",password="${{ env.IIS_SERVER_PASSWORD }}",authtype="Basic"'
-  #  - name: GitHub Actions WebDeploy
-  #    uses: cschleiden/webdeploy-action@v1
-  #    with:
-   #     webSiteName: 'MyDemoSite'
-    #    publish-profile: ${{secrets.AZURE_WEBDEPLOY_PUBLISH_PROFILE}}
-      #  package: Publish/CICDPractice/
-
-   # - name : Deploy to Azure App service
-   #   uses: azure/webapps-deploy@v2
-   #   with:
-   #     app-name: CICDPracticeApp
-   #     publish-profile: ${{secrets.AZURE_WEBDEPLOY_PUBLISH_PROFILE}}
-   #     package: Publish/CICDPractice/
+      run: '"C:/Program Files (x86)/IIS/Microsoft Web Deploy V3/msdeploy.exe" -verb:sync -allowUntrusted -source:contentPath="%CD%\${{ env.PROJECT_DIRECTORY_PATH }}\bin\Release\netcoreapp3.1\Publish\" -dest:contentPath="${{ env.WEBSITE_CONTENT_PATH }}",computerName="${{ env.IIS_SERVER_COMPUTER_NAME }}/msdeploy.axd?site=${{ env.IIS_WEBSITE_NAME }}",username="${{ env.IIS_SERVER_USERNAME }}",password="${{ env.IIS_SERVER_PASSWORD }}",authtype="Basic"'
+    - name: Start Application Pool
+      shell: cmd
+      run: '"C:/Program Files (x86)/IIS/Microsoft Web Deploy V3/msdeploy.exe" -verb:sync -allowUntrusted -source:recycleApp -dest:recycleApp="${{ env.RECYCLE_APP_NAME }}",recycleMode="StartAppPool",computerName="${{ env.IIS_SERVER_COMPUTER_NAME }}/msdeploy.axd?site=${{ env.IIS_WEBSITE_NAME }}",username="${{ env.IIS_SERVER_USERNAME }}",password="${{ env.IIS_SERVER_PASSWORD }}",AuthType="Basic"' 
