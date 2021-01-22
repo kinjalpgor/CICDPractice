@@ -42,9 +42,6 @@ jobs:
     - name: Dotnet publish
       run: dotnet publish
            ${{ env.PROJECT_DIRECTORY_PATH }}/${{ env.PROJECT_DIRECTORY_PATH }}.csproj
-           --source https://api.nuget.org/v3/index.json
-           --configuration Release
-             
       
     - name: Stop Application Pool
       shell: cmd
