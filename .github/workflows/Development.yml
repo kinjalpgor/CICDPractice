@@ -58,6 +58,10 @@ jobs:
   
      steps:
       - uses: actions/checkout@v2
+      - name: Build started webhook
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Build started'}" ${{ secrets.TEAMS_WEBHOOK_URI }}
+    
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
