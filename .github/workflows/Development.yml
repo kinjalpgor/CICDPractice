@@ -89,7 +89,16 @@ jobs:
         with:
           name: Publish
           path: D:\a\CICDPractice\CICDPractice\CICDPractice\bin\Debug\netcoreapp3.1\publish\
-   
+          
+      - name: Build completed
+        if: ${{ success() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Build completed'}" ${{ secrets.TEAMS_WEBHOOK_URI }}
+        
+      - name: Deploy  to dev started
+        if: ${{ success() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Deploy to dev started'}" ${{ secrets.TEAMS_WEBHOOK_URI }}
       
       - name: Stop Application Pool
         shell: cmd
@@ -108,3 +117,12 @@ jobs:
             app-name: CICDPracticeApp 
             publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Define secret variable in repository settings as per action documentation
             package: D:\a\CICDPractice\CICDPractice\CICDPractice\bin\Debug\netcoreapp3.1\publish\
+     
+      - name: Deploy completed
+        if: ${{ success() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Deploy completed to AppService'}" ${{ secrets.TEAMS_WEBHOOK_URI }}
+      - name: Build and deploy failure
+        if: ${{ failure() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Build and deploy failed }" ${{ secrets.TEAMS_WEBHOOK_URI }}
