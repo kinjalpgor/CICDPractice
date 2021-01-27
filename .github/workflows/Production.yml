@@ -56,7 +56,7 @@ jobs:
       RECYCLE_APP_NAME: ${{ secrets.RECYCLE_APP_NAME }}
       WEBSITE_CONTENT_PATH: ${{ secrets.WEBSITE_CONTENT_PATH }} 
   
-  steps:
+     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -90,6 +90,16 @@ jobs:
           name: Publish
           path: D:\a\CICDPractice\CICDPractice\CICDPractice\bin\Release\netcoreapp3.1\publish\
       
+      - name: Build completed
+        if: ${{ success() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Build completed'}" ${{ secrets.TEAMS_WEBHOOK_URI }}
+        
+      - name: Deploy to production started
+        if: ${{ success() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Deploy to Production started'}" ${{ secrets.TEAMS_WEBHOOK_URI }}
+    
       - name: Stop Application Pool
         shell: cmd
         run: '"C:/Program Files (x86)/IIS/Microsoft Web Deploy V3/msdeploy.exe" -verb:sync -allowUntrusted -source:recycleApp -dest:recycleApp="${{ env.RECYCLE_APP_NAME }}",recycleMode="StopAppPool",computerName="${{ env.IIS_SERVER_COMPUTER_NAME }}/msdeploy.axd?site=${{ env.IIS_WEBSITE_NAME }}",username="${{ env.IIS_SERVER_USERNAME }}",password="${{ env.IIS_SERVER_PASSWORD }}",AuthType="Basic"'
@@ -100,10 +110,24 @@ jobs:
         shell: cmd
         run: '"C:/Program Files (x86)/IIS/Microsoft Web Deploy V3/msdeploy.exe" -verb:sync -allowUntrusted -source:recycleApp -dest:recycleApp="${{ env.RECYCLE_APP_NAME }}",recycleMode="StartAppPool",computerName="${{ env.IIS_SERVER_COMPUTER_NAME }}/msdeploy.axd?site=${{ env.IIS_WEBSITE_NAME }}",username="${{ env.IIS_SERVER_USERNAME }}",password="${{ env.IIS_SERVER_PASSWORD }}",AuthType="Basic"' 
 
-     # Deploy to Azure AppService
+      - name: Deploy to production completed
+        if: ${{ success() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Deploy to production Azure VM Completed'}" ${{ secrets.TEAMS_WEBHOOK_URI }}
+   
+   # Deploy to Azure AppService
       - name: 'Run Azure webapp deploy action using publish profile credentials'
         uses: azure/webapps-deploy@v2
         with: 
           app-name: CICDPracticeApp 
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Define secret variable in repository settings as per action documentation
           package: D:\a\CICDPractice\CICDPractice\CICDPractice\bin\Release\netcoreapp3.1\publish\
+
+      - name: Deploy completed
+        if: ${{ success() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Deploy completed to AppService'}" ${{ secrets.TEAMS_WEBHOOK_URI }}
+      - name: Build and deploy failure
+        if: ${{ failure() }}
+        shell: cmd
+        run: curl.exe -H "Content-Type:application/json" -d "{'text':'Build and deploy failed }" ${{ secrets.TEAMS_WEBHOOK_URI }}
